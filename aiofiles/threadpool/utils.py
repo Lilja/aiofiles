@@ -1,4 +1,3 @@
-import asyncio
 import functools
 
 
@@ -29,11 +28,10 @@ def proxy_property_directly(*attrs):
 
 
 def _make_delegate_method(attr_name):
-    @asyncio.coroutine
-    def method(self, *args, **kwargs):
+    async def method(self, *args, **kwargs):
         cb = functools.partial(getattr(self._file, attr_name),
                                *args, **kwargs)
-        return (yield from self._loop.run_in_executor(self._executor, cb))
+        return (await self._loop.run_in_executor(self._executor, cb))
     return method
 
 

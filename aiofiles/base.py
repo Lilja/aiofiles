@@ -13,10 +13,9 @@ class AsyncBase:
         """We are our own iterator."""
         return self
 
-    @asyncio.coroutine
-    def __anext__(self):
+    async def __anext__(self):
         """Simulate normal file iteration."""
-        line = yield from self.readline()
+        line = await self.readline()
         if line:
             return line
         else:
@@ -59,27 +58,23 @@ class _ContextManager(Coroutine):
     def __next__(self):
         return self.send(None)
 
-    @asyncio.coroutine
-    def __iter__(self):
-        resp = yield from self._coro
+    async def __iter__(self):
+        resp = await self._coro
         return resp
 
     def __await__(self):
-        resp = yield from self._coro
+        resp = await self._coro
         return resp
 
-    @asyncio.coroutine
-    def __anext__(self):
-        resp = yield from self._coro
+    async def __anext__(self):
+        resp = await self._coro
         return resp
 
-    @asyncio.coroutine
-    def __aenter__(self):
-        self._obj = yield from self._coro
+    async def __aenter__(self):
+        self._obj = await self._coro
         return self._obj
 
-    @asyncio.coroutine
-    def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type, exc, tb):
         self._obj.close()
         self._obj = None
 
@@ -87,7 +82,6 @@ class _ContextManager(Coroutine):
 class AiofilesContextManager(_ContextManager):
     """An adjusted async context manager for aiofiles."""
 
-    @asyncio.coroutine
-    def __aexit__(self, exc_type, exc_val, exc_tb):
-        yield from self._obj.close()
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self._obj.close()
         self._obj = None

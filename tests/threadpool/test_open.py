@@ -16,7 +16,7 @@ def test_file_not_found(mode):
     assert expected
 
     try:
-        yield from aioopen(filename, mode=mode)
+        await aioopen(filename, mode=mode)
     except Exception as e:
         actual = e
 

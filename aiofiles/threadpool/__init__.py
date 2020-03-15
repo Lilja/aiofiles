@@ -23,16 +23,15 @@ def open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None,
                                         executor=executor))
 
 
-@asyncio.coroutine
-def _open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None,
-          closefd=True, opener=None, *, loop=None, executor=None):
+async def _open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None,
+                closefd=True, opener=None, *, loop=None, executor=None):
     """Open an asyncio file."""
     if loop is None:
         loop = asyncio.get_event_loop()
     cb = partial(sync_open, file, mode=mode, buffering=buffering,
                  encoding=encoding, errors=errors, newline=newline,
                  closefd=closefd, opener=opener)
-    f = yield from loop.run_in_executor(executor, cb)
+    f = await loop.run_in_executor(executor, cb)
 
     return wrap(f, loop=loop, executor=executor)
 
